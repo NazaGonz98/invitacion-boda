@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>¡Nos Casamos! Naza & Ale</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+      color: #ffffff00;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+    }
+    h1 {
+      color: #556b2f;
+      font-size: 3em;
+      margin-bottom: 0.2em;
+    }
+    .fecha {
+      font-size: 1.4em;
+      margin-bottom: 20px;
+      color: #212e07;
+    }
+    .seccion {
+      margin: 40px 0;
+    }
+    .boton {
+      background-color: #6e7c7359;
+      color: #6b8e23;
+      border: 2px solid #0f110c8e;
+      padding: 18px 40px;
+      border-radius: 30px;
+      font-size: 1.4em;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 25px;
+      box-shadow: 0 4px 16px rgba(107,142,35,0.15);
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+      cursor: pointer;
+    }
+    .boton:hover {
+      background-color: #6a8e238a;
+      color: #003800ee;
+      transform: scale(1.08);
+      box-shadow: 0 8px 24px rgba(107,142,35,0.25);
+    }
+    .galeria {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .galeria img {
+      width: 200px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    audio {
+      display: none;
+    }
+    /* Confeti bienvenida */
+    #confeti-bienvenida {
+      position: fixed;
+      z-index: 9999;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-size: 2.5em;
+      color: #212e07;
+      font-weight: bold;
+      transition: opacity 0.7s;
+      backdrop-filter: blur(2px);
+      /* Quita el background blanco aquí */
+    }
+    #confeti-bienvenida .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.493); /* Oscurece el fondo */
+      z-index: 1;
+    }
+    #confeti-bienvenida .mensaje {
+      position: relative;
+      z-index: 2;
+      background: rgba(107,142,35,0.18); /* Verde oliva translúcido */
+      color: #212e07; /* Verde oliva oscuro */
+      padding: 40px 30px 30px 30px;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 280px;
+    }
+    #confeti-bienvenida.oculto {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #contenido-principal {
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    #contenido-principal.visible {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      backdrop-filter: blur(6px); /* Aumenta el desenfoque */
+      -webkit-backdrop-filter: blur(6px); /* Compatibilidad Safari */
+    }
+    /* Elimina el fondo gris del main */
+    #contenido-principal main {
+      background: rgba(107,142,35,0.18); /* Verde oliva translúcido */
+      color: inherit;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(201, 201, 201, 0);
+      padding: 40px 30px 30px 30px;
+      margin: 40px auto;
+      max-width: 700px;
+      width: 100%;
+      display: block;
+      flex-direction: initial;
+      align-items: initial;
+    }
+    /* Elimina el color global verde oliva */
+    body, h1, h2, h3, h4, h5, h6, p, .boton, .fecha, .seccion, label, a {
+      color: #212e07 !important;
+      text-shadow: 0 2px 8px rgba(255,255,255,0.10);
+    }
+    #contador {
+      font-family: 'Segoe UI', 'Courier New', Courier, monospace;
+      background: transparent; /* Fondo totalmente transparente */
+      color: #6b8e23;
+      font-size: 2.8em;
+      letter-spacing: 0.08em;
+      padding: 18px 38px 10px 38px;
+      border-radius: 32px;
+      margin: 24px auto 36px auto;
+      width: fit-content;
+      box-shadow: none;
+      font-weight: bold;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background 0.3s;
+    }
+    #contador span.numero {
+      font-size: 2em;
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      color: #3e4e1c;
+      letter-spacing: 0.04em;
+    }
+    #contador span.label {
+      font-size: 0.45em;
+      color: #6b8e23;
+      margin-top: 0.2em;
+      letter-spacing: 0.15em;
+      font-weight: 500;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2em;
+      }
+      .galeria img {
+        width: 100px;
+      }
+      .seccion {
+        margin: 25px 0;
+      }
+      #confeti-bienvenida {
+        font-size: 1.5em;
+      }
+    }
+    .contador-digital {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      align-items: flex-end;
+    }
+    .contador-digital div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255,255,255,0.65); /* Más translúcido */
+      border-radius: 14px;
+      padding: 10px 14px 4px 14px;
+      box-shadow: 0 2px 8px rgba(107,142,35,0.10);
+      min-width: 48px;
+      transition: background 0.3s;
+    }
+    .contador-digital .digito {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.4em; /* Más chico */
+      color: #3e4e1c;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 8px #e6f2d6;
+      transition: transform 0.2s;
+    }
+    .contador-digital .digito.cambio {
+      animation: pop 0.3s;
+    }
+    @keyframes pop {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+    #corazones-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .corazon {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      background: url('https://cdn-icons-png.flaticon.com/512/833/833472.png') no-repeat center/contain;
+      opacity: 0.7;
+      animation: flotar 6s linear infinite;
+    }
+    @keyframes flotar {
+      0% { transform: translateY(100vh) scale(0.8) rotate(0deg);}
+      100% { transform: translateY(-10vh) scale(1.1) rotate(30deg);}
+    }
+    .frase-romantica {
+      font-family: 'Great Vibes', cursive;
+      font-size: 1.3em;
+      color: #1d2e0d;
+      margin-top: 16px;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 8px #fff8;
+    }
+    /* Estilos para la tarjeta de bienvenida */
+    .tarjeta-bienvenida {
+      background: transparent; /* Sin fondo */
+      border-radius: 32px;
+      box-shadow: none;
+      padding: 36px 28px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 320px;
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
+      animation: aparecer 1.2s cubic-bezier(.68,-0.55,.27,1.55);
+    }
+    @keyframes aparecer {
+      0% { transform: scale(0.7) rotate(-8deg); opacity: 0; }
+      80% { transform: scale(1.05) rotate(2deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg);}
+    }
+    .foto-circular {
+     width: 120px;
+      height: 110px;
+      position: relative;
+      background: #fff;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 12px #6b8e2333;
+      border: 4px solid #6b8e23;
+      clip-path: path("M 60 30 C 60 10, 90 0, 110 30 C 130 60, 100 100, 60 120 C 20 100, -10 60, 10 30 C 30 0, 60 10, 60 30 Z");
+      -webkit-clip-path: path("M 60 30 C 60 10, 90 0, 110 30 C 130 60, 100 100, 60 120 C 20 100, -10 60, 10 30 C 30 0, 60 10, 60 30 Z");
+      overflow: hidden;
+    }
+    .foto-circular img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .titulo-bienvenida {
+      font-size: 2em;
+      font-weight: bold;
+      color: #1d2e0d;
+      margin-bottom: 8px;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .corazon-animado {
+      display: inline-block;
+      animation: latido 1.2s infinite;
+      font-size: 1.2em;
+    }
+    @keyframes latido {
+      0%, 100% { transform: scale(1);}
+      20% { transform: scale(1.25);}
+      40% { transform: scale(1);}
+      60% { transform: scale(1.18);}
+      80% { transform: scale(1);}
+    }
+    #confeti-bienvenida .blur-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="confeti-bienvenida">
+    <div class="overlay"></div>
+    <div class="mensaje tarjeta-bienvenida">
+      <div class="foto-circular">
+        <img src="img_ale_naza.png.jpeg" alt="Naza y Ale" />
+      </div>
+      <div class="titulo-bienvenida">
+        <span class="corazon-animado">💚</span>
+        ¡Nos casamos!
+        <span class="corazon-animado">💚</span>
+      </div>
+      <div class="frase-romantica">"El amor es la mejor aventura"</div>
+      <button id="entrar-btn" class="boton" style="margin-top:30px;">Entrar</button>
+    </div>
+  </div>
+
+  <div id="contenido-principal">
+    <audio id="musica" loop>
+      <source src="musica.mp3" type="audio/mpeg">
+      Tu navegador no soporta audio HTML5.
+    </audio>
+
+    <main>
+      <h1>Naza & Ale</h1>
+      <p class="fecha">13 de Febrero de 2026 — Hora a confirmar</p>
+      <div id="contador"></div>
+
+      <section class="seccion">
+        <h2>💍 Ceremonia Civil</h2>
+        <p>Registro Provincial de las Personas - La Plata 1°</p>
+        <p>
+          <button class="boton" type="button" onclick="document.getElementById('mapa-ceremonia').style.display='block'">¿Cómo llegar?</button>
+        </p>
+        <div id="mapa-ceremonia" style="display:none; margin-top:10px;">
+          <iframe
+            src="https://www.google.com/maps?q=1+y+59,+La+Plata,+Provincia+de+Buenos+Aires,+Argentina&output=embed"
+            width="100%" height="300" style="border:0; border-radius:16px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </section>
+
+      <section class="seccion">
+        <h2>🎉 Celebración</h2>
+        <p>Quinta Las Amapolas</p>
+        <p>Avenida Montevideo 6334, Ensenada</p>
+        <p>
+          <button class="boton" type="button" onclick="document.getElementById('mapa-fiesta').style.display='block'">¿Cómo llegar?</button>
+        </p>
+        <div id="mapa-fiesta" style="display:none; margin-top:10px;">
+          <iframe
+            src="https://www.google.com/maps?q=Avenida+Montevideo+6334,+Ensenada,+Buenos+Aires,+Argentina&output=embed"
+            width="100%" height="300" style="border:0; border-radius:16px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </section>
+
+      <section class="seccion">
+        <h2>📸 Galería</h2>
+        <p>(Acá pondremos nuestras fotos más lindas 🥰)</p>
+        <div class="galeria">
+          <!-- Cuando tengas fotos, agregalas así: -->
+          <!-- <img src="foto1.jpg" alt="Foto Naza y Ale"> -->
+        </div>
+      </section>
+
+      <section class="seccion">
+        <h2>✉️ Confirmá tu asistencia</h2>
+        <a class="boton" href="https://forms.gle/BvfG8o7yTCzaAQfV8" target="_blank">CONFIRMACIÓN</a>
+      </section>
+
+      <footer class="seccion">
+        <p>¡Esperamos compartir este momento tan especial con vos!</p>
+        <p>Con amor, Naza & Ale 💚</p>
+      </footer>
+    </main>
+  </div>
+
+  <div id="corazones-bg"></div>
+  <div class="blur-bg"></div>
+
+  <script>
+    // Confeti inicial
+    window.onload = function() {
+      confetti({
+        particleCount: 200,
+        spread: 90,
+        origin: { y: 0.6 }
+      });
+    };
+
+    // Botón Entrar: muestra la web y arranca la música
+    document.getElementById('entrar-btn').onclick = function(e) {
+      e.stopPropagation();
+      document.getElementById('confeti-bienvenida').classList.add('oculto');
+      document.getElementById('contenido-principal').classList.add('visible');
+      document.getElementById('musica').play();
+    };
+
+    let prev = {d: null, h: null, m: null, s: null};
+    function actualizarContador() {
+      const fechaBoda = new Date('2026-02-13T00:00:00');
+      const ahora = new Date();
+      const diff = fechaBoda - ahora;
+
+      if (diff <= 0) {
+        document.getElementById('contador').innerHTML = "<span style='font-size:1.2em'>¡Hoy es el gran día!</span>";
+        return;
+      }
+
+      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutos = Math.floor((diff / (1000 * 60)) % 60);
+      const segundos = Math.floor((diff / 1000) % 60);
+
+      document.getElementById('contador').innerHTML =
+        `<div class="contador-digital">
+          <div><span class="digito" id="digito-d">${dias}</span><span class="unidad">días</span></div>
+          <div><span class="digito" id="digito-h">${horas.toString().padStart(2, '0')}</span><span class="unidad">hs</span></div>
+          <div><span class="digito" id="digito-m">${minutos.toString().padStart(2, '0')}</span><span class="unidad">min</span></div>
+          <div><span class="digito" id="digito-s">${segundos.toString().padStart(2, '0')}</span><span class="unidad">seg</span></div>
+        </div>`;
+
+      // Efecto pop solo si cambia el número
+      if (prev.d !== dias) {
+        document.getElementById('digito-d').classList.add('cambio');
+        prev.d = dias;
+      }
+      if (prev.h !== horas) {
+        document.getElementById('digito-h').classList.add('cambio');
+        prev.h = horas;
+      }
+      if (prev.m !== minutos) {
+        document.getElementById('digito-m').classList.add('cambio');
+        prev.m = minutos;
+      }
+      if (prev.s !== segundos) {
+        document.getElementById('digito-s').classList.add('cambio');
+        prev.s = segundos;
+      }
+      // Quita la clase después de la animación
+      setTimeout(() => {
+        document.querySelectorAll('.digito.cambio').forEach(el => el.classList.remove('cambio'));
+      }, 300);
+    }
+    setInterval(actualizarContador, 1000);
+    actualizarContador();
+
+    // Corazones flotando en la bienvenida
+    function crearCorazones() {
+      const cont = document.getElementById('corazones-bg');
+      for (let i = 0; i < 15; i++) {
+        const c = document.createElement('div');
+        c.className = 'corazon';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.animationDelay = (Math.random() * 4) + 's';
+        cont.appendChild(c);
+      }
+    }
+    crearCorazones();
+  </script>
+</body>
+</html>
